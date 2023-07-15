@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const User = require('./models/user');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(bodyParser.json());
@@ -18,6 +19,32 @@ app.get("/problemset", (req, res) => {
 
 })
 app.get("/help", (req, res) => {
+
+})
+app.post("/login", async (req, res) => {
+    const {username, password} = req.body;
+
+     try{
+     var user = await User.findOne({ where: { username } })
+
+     const passwordMatch = await bcrypt.compare(password, user.password);
+
+     if (!user || !passwordMatch) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+     console.log('User Logged In successfully:', user.toJSON());
+     // Create JWT token
+     const token = jwt.sign({ userId: user.username }, 'your_secret_key_here', { expiresIn: '1h' });
+     //TODO: Handle secret key
+     return res.set('Authorization', `Bearer ${token}`).json({ message: 'Login successful' });
+
+    }
+    catch(ex){
+        console.error('Error during login:', ex);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+   
 
 })
 async function createUser(username, password, res) {
