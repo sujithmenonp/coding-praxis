@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const authenticateToken = require('./authMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,8 +16,11 @@ app.get("/about", (req, res) => {
   res.send("Hello, We are just starting...");
 })
 
-app.get("/problemset", (req, res) => {
+app.get("/problemset",authenticateToken, (req, res) => {
 
+})
+app.get("/submissions",authenticateToken, (req, res) => {
+  res.json({'problem1':""});
 })
 app.get("/help", (req, res) => {
 
