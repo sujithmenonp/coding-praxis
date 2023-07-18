@@ -4,9 +4,12 @@ const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authenticateToken = require('./authMiddleware');
+const cors = require('cors');
+
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Hello, world');
@@ -16,7 +19,7 @@ app.get("/about", (req, res) => {
   res.send("Hello, We are just starting...");
 })
 
-app.get("/problemset",authenticateToken, (req, res) => {
+app.get("problems",authenticateToken, (req, res) => {
 
 })
 app.get("/submissions",authenticateToken, (req, res) => {
@@ -30,10 +33,17 @@ app.post("/login", async (req, res) => {
 
      try{
      var user = await User.findOne({ where: { username } })
+     
+     console.log("user: "+user);
 
-     const passwordMatch = await bcrypt.compare(password, user.password);
+     if (!user) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      
+     
+     const passwordMatch =  await bcrypt.compare(password, user.password);
 
-     if (!user || !passwordMatch) {
+     if (!passwordMatch) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
