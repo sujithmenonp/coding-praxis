@@ -6,6 +6,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [error, setError] = useState('');
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -38,6 +39,9 @@ const LoginPage = () => {
       .then(response =>{
         if(response.status === 200){
           setIsLoggedIn(true);
+          setError(''); 
+        }else{
+            setError('Invalid username or password'); 
         }
         response.json();
       } )
@@ -65,6 +69,7 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <h2>Login Page</h2>
+      {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <label htmlFor="username">Username:</label>
